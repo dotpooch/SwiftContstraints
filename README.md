@@ -8,7 +8,7 @@ You can use the attached file first creating a Constraint relationship, which is
 
 The NSLayoutAttribute, which are list below, is an enum and easy to set:
 
-.Baseline
+.Baseline\n
 .Bottom
 .BottomMargin
 .CenterX
