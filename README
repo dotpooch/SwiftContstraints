@@ -3,7 +3,7 @@ The attached code contains functions for simplifying the constraint development 
 
 The existing way to build a constraint is cumbersome at best.
 
-You can use the attached file first creating a Constraint relationship, which is either a restricted view to an authority view, or a restricted view to itself.  The views can be any UIView object, like a table, button, label, uiview, etc.  Then you can chain all the contraints you, defining their parameters at that time.  If there is an error in the constraint or a conflict, the error will show the name of the constraint, the setting, and the file, function, and line that caused it.
+You can use the attached file by first creating a Constraint relationship, which is either a restricted view to an authority view, or a restricted view alone.  The views can be any UIView object, like a table, button, label, uiview, etc.  Then you can chain all the contraints you, defining their parameters at that time.  If there is an error in the constraint or a conflict, the error will show the name of the constraint, the setting, and the file, function, and line that caused it.
 
 
 The NSLayoutAttribute, which are list below, is an enum and easy to set:
