@@ -2,12 +2,12 @@
 import UIKit
 
 protocol CGFLoatConvertible {
-  func makeCGFLoat(_value:AnyObject) -> CGFloat
+  func makeCGFLoat(_value:NSNumber) -> CGFloat
 }
 
 extension CGFLoatConvertible {
 
-  func makeCGFLoat(_value:AnyObject) -> CGFloat {
+  func makeCGFLoat(_value:NSNumber) -> CGFloat {
     if let value = _value as? Int {
       return CGFloat(value)
     } else if let value = _value as? Float {
@@ -138,7 +138,7 @@ class Constraint:Binding {
     location = Locate.debug(_path, _function:_function, _line:_line)
   }
   
-  func describe(_value:AnyObject) -> String {
+  func describe(_value:NSNumber) -> String {
     return "[" + String(_value) + "]"
   }
   
@@ -176,7 +176,7 @@ protocol Constrainable:Binding {
 
 extension Constraint {
   
-  func squareStatic(_value:AnyObject) -> Self {
+  func squareStatic(_value:NSNumber) -> Self {
     staticHeight(_value)
     relateEqual(.Width, restrict:.Height)
     return self
@@ -198,8 +198,8 @@ extension Constraint:CGFLoatConvertible {
     _restricted:NSLayoutAttribute
     , _authority:NSLayoutAttribute? = nil
     , _relationship:NSLayoutRelation? = nil
-    , _constant:AnyObject? = nil
-    , _multiple:AnyObject? = nil)
+    , _constant:NSNumber? = nil
+    , _multiple:NSNumber? = nil)
   {
     
     restrictedAttribute  = _restricted
@@ -235,12 +235,12 @@ extension Constraint {
     return self
   }
   
-  func equalAlterFixed(_attribute:NSLayoutAttribute, constant _constant:AnyObject) -> Self {
+  func equalAlterFixed(_attribute:NSLayoutAttribute, constant _constant:NSNumber) -> Self {
     apply(_attribute, _constant:_constant)
     return self
   }
   
-  func equalAlterRelative(_attribute:NSLayoutAttribute, multiple _multiple:AnyObject) -> Self {
+  func equalAlterRelative(_attribute:NSLayoutAttribute, multiple _multiple:NSNumber) -> Self {
     apply(_attribute, _multiple:_multiple)
     return self
   }
@@ -250,22 +250,22 @@ extension Constraint {
 
 extension Constraint {
   
-  func staticWidth(_constant:AnyObject) -> Self {
+  func staticWidth(_constant:NSNumber) -> Self {
     apply(.Width, _constant:_constant)
     return self
   }
   
-  func staticHeight(_constant:AnyObject) -> Self {
+  func staticHeight(_constant:NSNumber) -> Self {
     apply(.Height, _constant:_constant)
     return self
   }
   
-  func lineStaticWidth(_constant:AnyObject) {
+  func lineStaticWidth(_constant:NSNumber) {
     staticWidth(_constant)
     staticHeight(1)
   }
   
-  func lineStaticHeight(_constant:AnyObject) {
+  func lineStaticHeight(_constant:NSNumber) {
     staticWidth(1)
     staticHeight(_constant)
   }
@@ -279,12 +279,12 @@ extension Constraint {
     return self
   }
   
-  func greaterOrSameAlterFixed(_attribute:NSLayoutAttribute, constant _constant:AnyObject) -> Self {
+  func greaterOrSameAlterFixed(_attribute:NSLayoutAttribute, constant _constant:NSNumber) -> Self {
     apply(_attribute, _relationship:.GreaterThanOrEqual, _constant:_constant)
     return self
   }
   
-  func greaterOrSameAlterRelative(_attribute:NSLayoutAttribute, multiple _multiple:AnyObject) -> Self {
+  func greaterOrSameAlterRelative(_attribute:NSLayoutAttribute, multiple _multiple:NSNumber) -> Self {
     apply(_attribute, _relationship:.GreaterThanOrEqual, _multiple:_multiple)
     return self
   }
@@ -303,7 +303,7 @@ extension Constraint {
     return self
   }
   
-  func lessOrSameAlterRelative(_attribute:NSLayoutAttribute, multiple _multiple:AnyObject) -> Self {
+  func lessOrSameAlterRelative(_attribute:NSLayoutAttribute, multiple _multiple:NSNumber) -> Self {
     apply(_attribute, _relationship:.LessThanOrEqual, _multiple:_multiple)
     return self
   }
@@ -317,12 +317,12 @@ extension Constraint {
     return self
   }
   
-  func relateEqualAlterFixed(_authority:NSLayoutAttribute, restrict _restricted:NSLayoutAttribute, constant _constant:AnyObject) -> Self {
+  func relateEqualAlterFixed(_authority:NSLayoutAttribute, restrict _restricted:NSLayoutAttribute, constant _constant:NSNumber) -> Self {
     apply(_restricted, _authority:_authority, _constant:_constant)
     return self
   }
   
-  func relateEqualAlterRelative(_authority:NSLayoutAttribute, restrict _restricted:NSLayoutAttribute, multiple _multiple:AnyObject) -> Self {
+  func relateEqualAlterRelative(_authority:NSLayoutAttribute, restrict _restricted:NSLayoutAttribute, multiple _multiple:NSNumber) -> Self {
     apply(_restricted, _authority:_authority, _multiple:_multiple)
     return self
   }
@@ -336,7 +336,7 @@ extension Constraint {
     return self
   }
   
-  func relateLessOrEqualAlterFixed(_authority:NSLayoutAttribute, restrict _restricted:NSLayoutAttribute, constant _constant:AnyObject) -> Self {
+  func relateLessOrEqualAlterFixed(_authority:NSLayoutAttribute, restrict _restricted:NSLayoutAttribute, constant _constant:NSNumber) -> Self {
     apply(_restricted, _authority:_authority, _relationship:.LessThanOrEqual, _constant:_constant)
     return self
   }
@@ -369,22 +369,22 @@ extension Constraint {
 
 extension Constraint {
   
-  func lineRelativeWidth(multiple _multiple:AnyObject) {
+  func lineRelativeWidth(multiple _multiple:NSNumber) {
     equalAlterRelative(.Width, multiple:_multiple)
     staticHeight(1)
   }
   
-  func lineRelativeHeight(multiple _multiple:AnyObject) {
+  func lineRelativeHeight(multiple _multiple:NSNumber) {
     staticWidth(1)
     equalAlterRelative(.Height, multiple:_multiple)
   }
   
-  func rectangleRelative(height _height:AnyObject, width _width:AnyObject) {
+  func rectangleRelative(height _height:NSNumber, width _width:NSNumber) {
     equalAlterRelative(.Height, multiple:_height)
     equalAlterRelative(.Width, multiple:_width)
   }
   
-  func rectangleStatic(height _height:AnyObject, width _width:AnyObject) {
+  func rectangleStatic(height _height:NSNumber, width _width:NSNumber) {
     staticWidth(_height)
     staticHeight(_width)
   }
@@ -396,14 +396,14 @@ extension Constraint {
     equal(.Width)
   }
   
-  func insetStatic(leading _leading:AnyObject, trailing _trailing:AnyObject, top _top:AnyObject, bottom _bottom:AnyObject) {
+  func insetStatic(leading _leading:NSNumber, trailing _trailing:NSNumber, top _top:NSNumber, bottom _bottom:NSNumber) {
     relateEqualAlterFixed(.Leading, restrict:.Leading, constant:_leading)
     relateEqualAlterFixed(.Trailing, restrict:.Trailing, constant:_trailing)
     relateEqualAlterFixed(.Top, restrict:.Top, constant:_top)
     relateEqualAlterFixed(.Bottom, restrict:.Bottom, constant:_bottom)
   }
   
-  func insetRelative(leading _leading:AnyObject, trailing _trailing:AnyObject, top _top:AnyObject, bottom _bottom:AnyObject) {
+  func insetRelative(leading _leading:NSNumber, trailing _trailing:NSNumber, top _top:NSNumber, bottom _bottom:NSNumber) {
     relateEqualAlterRelative(.Leading, restrict:.Leading, multiple:_leading)
     relateEqualAlterRelative(.Trailing, restrict:.Trailing, multiple:_trailing)
     relateEqualAlterRelative(.Top, restrict:.Top, multiple:_top)
@@ -417,11 +417,11 @@ extension Constraint {
     relateEqual(.BottomMargin, restrict:.Bottom)
   }
   
-  func insetUniformStatic(_constant:AnyObject) {
+  func insetUniformStatic(_constant:NSNumber) {
     insetStatic(leading: _constant, trailing: _constant, top: _constant, bottom: _constant)
   }
   
-  func insetUniformRelative(_multiple:AnyObject) {
+  func insetUniformRelative(_multiple:NSNumber) {
     insetRelative(leading: _multiple, trailing: _multiple, top: _multiple, bottom: _multiple)
   }
   
