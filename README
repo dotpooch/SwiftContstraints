@@ -1,92 +1,140 @@
+Bind is a chainable wrapper for the NSLayoutConstraints.
+You can use this class to constraints in a more readable manner.
 
-The attached code contains functions for simplifying the constraint development process in Swift 2.
+Environment: Swift 2 -- Cocoa and iOS
 
-The existing way to build a constraint is cumbersome at best.
+About Layout Constraints:
+1. Constraints always need to override the autoresizing mask, so make sure:
+translatesautoresizingmaskintoconstraints = false
 
-You can use the attached file by first creating a Constraint relationship, which is either a restricted view to an authority view, or a restricted view alone.  The views can be any UIView object, like a table, button, label, uiview, etc.  Then you can chain all the contraints you want, defining their parameters at that time.  If there is an error in the constraint or a conflict, the error will show the name of the constraint, the setting value, and the file, function, and line that caused it.
+2. Every constraint is injected into the containing view or itself.
+3. Every constraint has a restricted view and an authority view.  These can be the same, if, for instance, you want the a square and the height should equal the width.
 
-
-The NSLayoutAttribute, which are list below, is an enum and easy to set:
-
-.Baseline
-.Bottom
-.BottomMargin
-.CenterX
-.CenterXWithinMargins
-.CenterY
-.CenterYWithinMargins
-.FirstBaseline
-.Height
-.Leading
-.LeadingMargin
-.Left
-.LeftMargin
-.Right
-.RightMargin
-.Top
-.TopMargin
-.Trailing
-.TrailingMargin
-.Width
+How to use Bind:
+there are essentially 4 steps:
+1. Create an instance
+2. choose a constraint
+3. make any alterations
+4. apply constraint
 
 
+1. create an instance of Bind:
 
-var view1 = UIView() 
+a.
+let aView = UIView()
+Bind(restrict:aView) 
 
-Constraint(restricted:view1, authority:self)
-
-
-All the settings take an NSLayoutAttribute, the Fixed ones require a constant (NSNumber) and the Relative ones a multiplier (NSNumber)
-
-.equal(_attribute:)
-.equalAlterFixed(_attribute:, constant _constant:)
-.equalAlterRelative(_attribute:, multiple _multiple:)
-
-.staticWidth(_constant:)
-.staticHeight(_constant:)
-
-.squareStatic(_value:)
-.lineStaticWidth(_constant:)
-.lineStaticHeight(_constant:)
+What is happening:
+Behind the scene, the authority and the parent are being set to aView 
 
 
-.greaterOrSame(_attribute:)
-.greaterOrSameAlterFixed(_attribute:, constant _constant:)
-.greaterOrSameAlterRelative(_attribute:, multiple _multiple:)
+b.
+let parentView = UIView()
+let aView = UIView()
+Bind(restrict:aView, authority: parentView)
 
-.lessOrSame(_attribute:)
-.lessOrSameAlterFixed(_attribute:, constant _constant:Int)
-.lessOrSameAlterRelative(_attribute:, multiple _multiple:)
+What is happening:
+Behind the scene, the parent is also being set to parentView 
 
-.relateEqual(_authority:, restrict _restricted:)
-.relateEqualAlterFixed(_authority:, restrict _restricted:, constant _constant:)
-.relateEqualAlterRelative(_authority:, restrict _restricted:, multiple _multiple:)
+c.
+let parentView = UIView()
+let siblingView = UIView()
+let aView = UIView()
+Bind(restrict:aView, authority: siblingView, parent: parentView) 
 
-.relateLessOrEqual(_authority:, restrict _restricted:)
-.relateLessOrEqualAlterFixed(_authority:, restrict _restricted:, constant _constant:)
-.relateLessOrEqualAlterRelative(_authority:, restrict _restricted:, multiple _multiple:Float)
 
-.relateGreaterOrEqual(_authority:, restrict _restricted:)
-.relateGreaterOrEqualAlterFixed(_authority:, restrict _restricted:, constant _constant:Int)
-.relateGreaterOrEqualAlterRelative(_authority:, restrict _restricted:, multiple _multiple:Float)
+2. choose constraint:
+All methods return the instance you are working on so, methods are chainable.
 
-.lineRelativeWidth(multiple _multiple:)
-.lineRelativeHeight(multiple _multiple:)
-.rectangleRelative(height _height:, width _width:)
-.rectangleStatic(height _height:, width _width:)
+The methods below all make the attribute of the restricted view equal the attribute of the authority view and return the instance:
+.leadings -> self 
+.tops -> self 
+.trailings -> self
+.bottoms -> self
+.centerXs -> self
+.centerYs -> self
+.widths -> self
+.heights -> self
 
-.matchAll()
+.complex(restricted:, authority:, view feature)
+-- this allows for more complicated relationships, such putting a view to the right of a sibling
 
-.insetStatic(leading _leading:, trailing _trailing:, top _top:, bottom _bottom:)
+.alignRight
+.alignLeft
+.alignAbove
+.alignBelow
+-- these are wrapper function for complex above
 
-.insetRelative(leading _leading:, trailing _trailing:, top _top:, bottom _bottom:)
-.insetMargin()
-.insetUniformStatic(_constant:)
-.insetUniformRelative(_multiple:)
+.alignAll
+-- make the restricted view equal the parent view
 
 
 
+3. make any alterations:
+.staticOffset(a number) -> self
+-- take the last constraint and adjust it by a fixed number
 
+.relativeOffset(a number) -> self
+-- take the last constraint and adjust it by a percentage of the authority
+
+
+4. apply constraints
+One on these MUST be added after the last constraint in your instance or it (only the last) will not be run.
+There are 3 ways to do this: .__, .done, .apply.  They all do the same thing, I prefer .__ for asthetic reasons.
+
+
+
+Example Usage:
+
+This is a particularly complicated set or constraints written in a controller.
+
+    Bind(restrict: buttonFrame, authority: nameTextField, parent: self.view)
+      .alignLeft
+      .__
+    
+    Bind(restrict: buttonFrame, authority: self.view)
+      .leadings
+      .tops
+      .__
+    
+    Bind(restrict: buttonFrame)
+      .complex(restricted: .Width, authority: .Height)
+      .__
+
+    Bind(restrict: nameTextField, authority: self.view)
+      .widths.relativeOffset(0.55)
+      .trailings.staticOffset(-10)
+      .tops
+      .__
+    
+    Bind(restrict: roleTextField, authority: nameTextField, parent: self.view)
+      .heights
+      .widths
+      .trailings
+      .alignBelow
+      .__
+
+    Bind(restrict: profileButton, authority: buttonFrame, parent: self.view)
+      .alignBelow
+      .__
+
+    Bind(restrict: profileButton, authority: self.view)
+      .bottoms
+      .leadings
+      .complex(restricted:.Trailing, authority:.CenterX).staticOffset(-1)
+      .__
+    
+    Bind(restrict: line, authority: self.view)
+      .width(1)
+      .centerXs
+      .bottoms
+      .__
+
+    Bind(restrict: logoutButton, authority: self.view)
+      .complex(restricted:.Leading, authority:.CenterX).staticOffset(1)
+      .trailings
+      .bottoms
+      .__
 
 
 
